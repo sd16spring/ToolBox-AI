@@ -1,0 +1,24 @@
+Screenshot Explanations
+	by Kaitlyn Keil
+
+These are the explanations of the screenshots for the AI toolbox, following the order of g_cost, h_cost, f_cost, diagonals, lava_jumper, and finally swamps.
+
+g_cost
+The g cost, as shown in the corner of the boxes, displays how difficult to get to the square from the starting square. Since Paul is only running along the easy path, the cost only increases by one each square. A few places are inaccessible, labeled as None.
+
+h_cost
+The h cost shows the idealized distance to the cake, assuming that Paul can run over lava without a problem. This minimum distance is helpful because it lets Paul know what the perfect path would be and whether the box traveled to is worth the absolute distance lost. He starts at 18 because with a 10x10 grid, it takes 9 movements to get to the edge and then 9 steps to get down.
+
+f_cost
+The f cost shows the g cost and the h cost totalled.  This lets us know whether the sacrifice of distance from the end goal is worth avoiding the larger movement cost (is the detour around the lava worth not having to jump it?). You can see that the path Paul takes is all worth 18, the minimum f value, because every step costs 1 and takes him 1 closer to his goal. Thus, he found one of several minimum paths.
+
+diagonals
+Here, Paul has to deal with diagonals a few times to get to cake (worth it). I chose to display the g value of each square to show the jump every time he goes diagonally to a tile. You can see that, where there is an option to make a corner rather than go diagonally, the g value follows that instead, since it's the minimum.
+
+lava_jumper
+Dang, Paul's acrobatic and brave. That must be really great cake. I should find the recipe.
+Ahem. Anyway.
+So here, Paul has to jump the lava. Notice that, given the choice, he always tries to go in a straight line and not diagonally or jumping over lava, but would rather make a diagonal move than jump. For example, on the 4th highlighted square (g value 6 along his path), he could have jumped over the lava and gone straight. Instead, he sidestepped between lava patches so that he didn't have to jump, because diagonal is 3 + 1 to get to the tile labeled 10, whereas jumping would be 8 + 1. Shockingly, 4 < 9, so Paul would rather not do the jump.
+
+swamps
+In which Paul traverses an impossible area in order to get cake. You can see based on g values that moving around in the swamp is tough, and he'd rather go diagonally to avoid it. Interestingly, while in the swamp, diagonals are worth it because he wants to spend the minimum amount of time he can in the muck. Straight paths would cost 8 (4 + 4), and the diagonal is only 6. Shrek would be disappointed. Anyway, he made it, yay!
