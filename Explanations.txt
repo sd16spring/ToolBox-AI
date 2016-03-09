@@ -1,0 +1,23 @@
+Advantages of A Star
+A star is great at finding the shortest and least costly path. It is better than dfs because it does not take forever to run because dfs blindly selects tiles until it works. It is better than bfs because A star chooses the best of the tiles surounding it while bfs goes through all the tiles surounding it.
+
+Image name: g_scores.png
+g_score (what g score is and why those specific results)
+The scores are the number of steps that would need to be taken to get from the start position to that tile.
+
+Image name: h_scores.png
+h_score (what h score is and why those specific results)
+The scores are the number of steps that would need to be taken to get from that tile to the enging position.
+
+Image name: f_scores.png
+f_score (what f score is and why those specific results)
+These scores are the g scores added to the h scores.
+
+Image name: MovingDiagonally.png
+In this image he had to move diagonally because there was no other option to get through therefore it was worth the extra cost.
+
+Image name: hopping.png
+In this image he had to hop because there was no other option to get through therefore it was worth the extra cost.
+
+Image name: swamp.png
+In this image he had go through 2 barriers. In the first one he chose the swamp. Even though his cost increases but he would rather go straight through the swamp because the 3 more points from going through the swamp is less than it would take to hop. In the second barrier he hopped because the to move left to the swamp then go through it and move back to the right would cost more than taking the leap over the lava.
