@@ -1,0 +1,12 @@
+Explanations:
+Cost: The leftmost image shows g-cost, the total cost accumlated getting to that point.
+The middle image shows h-cost, the estimated cost to get to the end.
+The final image shows f-cost, the sum of h and g at that point. It represents the minimum total cost to get from start to finish passing through
+that point.
+
+Diagonal: In this picture, it's clear that Paul has to move diagonally to get past the two pizza blocks. He does. Good one, Paul.
+
+Hops: In hops.png, Paul is stuck and has no choice but to spend his 8 points and jump the lava.
+
+Swamps: These images show how costly swamps really are. In the first, Paul decides to make the costly hop operation to get over a patch of swamp.
+The second maze doesn't give Paul that chance, but he still hops out of the swamp tiles as soon as he possibly can.
