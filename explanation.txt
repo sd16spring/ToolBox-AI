@@ -1,0 +1,8 @@
+g-cost: the lowest cost to get to that square from the starting square
+h-cost: the estimated cost to get to the end; in this case, the smallest number of squares Paul would need to traverse if there were no obstacles (distance to move in the x direction + distance to move in the y direction)
+f-cost: adding f-cost and g-cost
+
+The following screenshots are displaying the g cost:
+diagonals: the first diagonal is necessary because there is no other way to reach the cake. Paul avoids doing any other diagonals because diagonals are more costly than moving one space in the x direction and one space in the y direction
+jumping: the jump and diagonal are required to get to the end, even though they are costly.
+swamp: Paul wants to minimize the time he is in the a=swamp, since it is so costly, so he takes the route with the shortest number of swamp tiles.
