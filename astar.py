@@ -27,6 +27,8 @@ class GridWorld():
                 self.cells[(i,j)] = Cell(self.screen,(i*self.cell_size, j*self.cell_size),(self.cell_size,self.cell_size))
     
     def _add_coords(self,a,b):
+        #map: returns a list of the function applied to each element of the iterable
+        #zip: returns a list of tuples [(a[0],b[0]), (a[1],b[1])]
         return tuple(map(sum,zip(a,b)))
 
     def _init_paul_and_cake(self):
@@ -56,17 +58,29 @@ class GridWorld():
         except:
             return False
 
+    def _is_special(self, cell_coord):
+        try:
+            actor = self.actors[cell_coord]
+            return actor.terrain_type
+        except:
+            return None
+
     def _add_swamp(self, mouse_pos):
-        #insert swamp code here.
-        pass
+        swamp_coord = (mouse_pos[0]/50, mouse_pos[1]/50)
+        #is_occupied only true if unpassable!
+        if self._is_special(swamp_coord)=='swamp': 
+            if self.actors[swamp_coord].unremovable == False:
+                self.actors.pop(swamp_coord, None)
+        else:
+            self.actors[swamp_coord] = ObstacleTile(swamp_coord, self, './images/swamp.jpg', is_unpassable = False, terrain_cost = 3, terrain_type = 'swamp')
 
     def _add_lava(self, mouse_pos):
         lava_coord = (mouse_pos[0]/50, mouse_pos[1]/50)
-        if self._is_occupied(lava_coord):
+        if self._is_special(lava_coord)=='lava':
             if self.actors[lava_coord].unremovable == False:
                 self.actors.pop(lava_coord, None)
         else:
-            self.actors[lava_coord] = ObstacleTile( lava_coord, self, './images/lava.jpg', is_unpassable = True, terrain_cost = 0)
+            self.actors[lava_coord] = ObstacleTile(lava_coord, self, './images/lava.jpg', is_unpassable = True, terrain_cost = 0, terrain_type = 'lava')
 
     def get_terrain_cost(self, cell_coord):
         try:
@@ -91,14 +105,16 @@ class GridWorld():
                 elif event.type is pygame.MOUSEBUTTONDOWN:
                     if self.add_tile_type == 'lava':
                         self._add_lava(event.pos)
-                    #insert swamp code here
+                    elif self.add_tile_type == 'swamp':
+                        self._add_swamp(event.pos)
                 elif event.type is pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.paul.run_astar(self.cake.cell_coordinates, self)
                         self.paul.get_path()
                     elif event.key == pygame.K_l:
                         self.add_tile_type = 'lava'
-                    #insert swamp code here
+                    elif event.key == pygame.K_s:
+                        self.add_tile_type = 'swamp'
 
 class Actor(object):
     def __init__(self, cell_coordinates, world, image_loc, unremovable = False, is_obstacle = True):
@@ -122,9 +138,10 @@ class Actor(object):
         screen.blit(self.image,self.image_rect)
 
 class ObstacleTile(Actor):
-    def __init__(self, cell_coordinates, world, image_loc, terrain_cost=0, is_unpassable = True):
+    def __init__(self, cell_coordinates, world, image_loc, terrain_cost=0, is_unpassable = True, terrain_type = 'lava'):
         super(ObstacleTile, self).__init__(cell_coordinates, world, image_loc, unremovable = False, is_obstacle = is_unpassable)
         self.terrain_cost = terrain_cost
+        self.terrain_type = terrain_type
         
 class Cell():
     def __init__(self, draw_screen, coordinates, dimensions):
@@ -142,8 +159,8 @@ class Cell():
         return self.g_cost + self.h_cost
 
     def draw(self):
-        COST_TO_DRAW = ''
-        #COST_TO_DRAW = self.g_cost
+        #COST_TO_DRAW = ''
+        COST_TO_DRAW = self.g_cost
         #COST_TO_DRAW = self.h_cost
         #COST_TO_DRAW = self.f_cost
         line_width = 2
@@ -167,12 +184,14 @@ class Paul(Actor):
     def get_open_adj_coords(self, coords):
         """returns list of valid coords that are adjacent to the argument, open, and not in the closed list."""
         #modify directions and costs as needed
-        directions = [(1,0),(0,1),(-1,0),(0,-1)]
-        costs = [1,1,1,1]
+        directions = [(1,0),(0,1),(-1,0),(0,-1),(-1,-1),(1,1),(1,-1),(-1,1),(2,0),(-2,0),(0,2),(0,-2)]
+        costs = [1,1,1,1,3,3,3,3,8,8,8,8]
         adj_coords = map(lambda d: self.world._add_coords(coords,d), directions)
         for i, coord in enumerate(adj_coords):
             costs[i] += self.world.get_terrain_cost(coord)
+        #list of booleans
         in_bounds = [self.world._is_in_grid(c) and not self.world._is_occupied(c) and c not in self.closed_list for c in adj_coords]
+        #get cooresponding coords and costs
         adj_coords = [c for (idx,c) in enumerate(adj_coords) if in_bounds[idx]]
         costs = [c for (idx,c) in enumerate(costs) if in_bounds[idx]]
         return adj_coords, costs
@@ -197,6 +216,7 @@ class Paul(Actor):
         print "final cost is", self.cells[coord_list[-1]].f_cost
         while self.start_coord not in coord_list:
             try:
+                #attribute created in run_astar, determines which coord came before it.
                 coord_list.append(self.cells[coord_list[-1]].parents_coords)
             except:
                 print 'No path found to destination coord!'
@@ -209,33 +229,39 @@ class Paul(Actor):
     def run_astar(self, destination_coord, world):
         """Updates cells g,h,f, and parent coordinates until the destination square is found."""
         self.reset_cell_values()
-        self.open_list = []
-        self.closed_list = []
         self.start_coord = self.cell_coordinates
         self.destination_coord = destination_coord
+
+        #start node
         coord_s = self.cell_coordinates
         cell_s = self.cells[coord_s]
         cell_s.g_cost = 0
         cell_s.h_cost = self.get_h_cost(coord_s, destination_coord)
+
         self.open_list = [coord_s]
+        self.closed_list = []
+
         while len(self.open_list) > 0:
+            #get smallest cost node
             coord_s = self.get_lowest_cost_open_coord()
             cell_s = self.cells[coord_s]
             self.open_list.remove(coord_s)
             self.closed_list.append(coord_s)
             walkable_open_coords, costs = self.get_open_adj_coords(coord_s)
+
             for idx,coord in enumerate(walkable_open_coords):
                 cell = self.cells[coord]
                 g_cost = cell_s.g_cost + costs[idx] 
                 h_cost = self.get_h_cost(coord, destination_coord)
                 f_cost = g_cost + h_cost
                 if coord in self.open_list:
+                    #update old cost, if necessary
                     old_f_cost = cell.f_cost
                     if f_cost < old_f_cost:
                         cell.g_cost = g_cost
                         cell.h_cost = h_cost
                         cell.parents_coords = coord_s
-                else:
+                else: #add to pqueue of nodes
                     self.open_list.append(coord)
                     cell.g_cost = g_cost
                     cell.h_cost = h_cost
