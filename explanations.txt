@@ -1,0 +1,8 @@
+G Cost is the cost of movement from the starting square to current square.
+It is equal to one plus the cost of movement from the previous square.
+
+H Cost is the estimated cost of movement from the current square to the final square.
+The way H Cost is calculated in the screenshot is by the Manhattan distance method. 
+
+F Cost is the sum of the G Cost and H Cost per square.
+Each square has it's own F Cost. 
