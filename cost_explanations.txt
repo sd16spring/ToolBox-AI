@@ -1,0 +1,4 @@
+f_cost : g_cost + h_cost
+
+g_cost is the number of squares passed by, or cost to get to the node 
+h_cost about how much it will cost to get to the goal

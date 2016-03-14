@@ -1,0 +1,3 @@
+hop.png demonstrates paul hopping because it is the only way paul can get to the goal
+diagonal.png demonstrates paul moving diagonally because he must move diagonally to avoid lava
+swamp.png demonstrates paul going through a swamp because he must to get to the goal and the increased cost is show in the increased final cost displayed in the terminal
