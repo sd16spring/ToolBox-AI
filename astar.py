@@ -29,6 +29,8 @@ class GridWorld():
     def _add_coords(self,a,b):
         return tuple(map(sum,zip(a,b)))
 
+
+
     def _init_paul_and_cake(self):
         self.paul = Paul( (0,0), self, './images/paul.jpg' )
         self.cake = Actor( (9,9), self, './images/cake.jpg' , unremovable = True, is_obstacle = False)
@@ -57,8 +59,13 @@ class GridWorld():
             return False
 
     def _add_swamp(self, mouse_pos):
-        #insert swamp code here.
-        pass
+        swamp_coord = (mouse_pos[0]/50, mouse_pos[1]/50)
+        if self._is_occupied(swamp_coord):
+            if self.actors[swamp_coord].unremovable == False:
+                self.actors.pop(swamp_coord, None)
+
+        else:
+            self.actors[swamp_coord] = ObstacleTile( swamp_coord, self, './images/swamp.jpg', is_unpassable = False, terrain_cost = 3)
 
     def _add_lava(self, mouse_pos):
         lava_coord = (mouse_pos[0]/50, mouse_pos[1]/50)
@@ -73,7 +80,7 @@ class GridWorld():
             actor = self.actors[cell_coord]
             if actor.terrain_cost is not None:
                 return actor.terrain_cost
-            else:
+            else: 
                 return 0
         except:
             return 0
@@ -91,14 +98,16 @@ class GridWorld():
                 elif event.type is pygame.MOUSEBUTTONDOWN:
                     if self.add_tile_type == 'lava':
                         self._add_lava(event.pos)
-                    #insert swamp code here
+                    if self.add_tile_type == 'swamp':
+                        self._add_swamp(event.pos)
                 elif event.type is pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         self.paul.run_astar(self.cake.cell_coordinates, self)
                         self.paul.get_path()
                     elif event.key == pygame.K_l:
                         self.add_tile_type = 'lava'
-                    #insert swamp code here
+                    elif event.key == pygame.K_s:
+                        self.add_tile_type = 'swamp'
 
 class Actor(object):
     def __init__(self, cell_coordinates, world, image_loc, unremovable = False, is_obstacle = True):
@@ -158,6 +167,7 @@ class Paul(Actor):
         super(Paul, self).__init__(init_coordinates, world, image_loc, unremovable = True)
         self.cells = world.cells
         self.open_list = []
+
         self.closed_list = []
 
     def get_h_cost(self, coord_a,coord_b):
@@ -167,8 +177,8 @@ class Paul(Actor):
     def get_open_adj_coords(self, coords):
         """returns list of valid coords that are adjacent to the argument, open, and not in the closed list."""
         #modify directions and costs as needed
-        directions = [(1,0),(0,1),(-1,0),(0,-1)]
-        costs = [1,1,1,1]
+        directions = [(1,0),(0,1),(-1,0),(0,-1),(1,1),(1,-1),(-1,1),(-1,-1),(2,0),(-2,0),(0,2),(0,-2)]
+        costs = [1,1,1,1,3,3,3,3,8,8,8,8]
         adj_coords = map(lambda d: self.world._add_coords(coords,d), directions)
         for i, coord in enumerate(adj_coords):
             costs[i] += self.world.get_terrain_cost(coord)
