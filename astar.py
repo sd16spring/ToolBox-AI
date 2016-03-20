@@ -150,9 +150,9 @@ class Cell():
 
     def draw(self):
         #COST_TO_DRAW = ''
-        #COST_TO_DRAW = self.g_cost
+        COST_TO_DRAW = self.g_cost
         #COST_TO_DRAW = self.h_cost
-        COST_TO_DRAW = self.f_cost
+        #COST_TO_DRAW = self.f_cost
         line_width = 2
         rect = pygame.Rect((self.coordinates[0],self.coordinates[1]),(self.dimensions[0],self.dimensions[1]))
         pygame.draw.rect(self.draw_screen, self.color, rect, line_width)
@@ -180,6 +180,7 @@ class Paul(Actor):
         for i, coord in enumerate(adj_coords):
             costs[i] += self.world.get_terrain_cost(coord)
         in_bounds = [self.world._is_in_grid(c) and not self.world._is_occupied(c) and c not in self.closed_list for c in adj_coords]
+        
         adj_coords = [c for (idx,c) in enumerate(adj_coords) if in_bounds[idx]]
         costs = [c for (idx,c) in enumerate(costs) if in_bounds[idx]]
         return adj_coords, costs
