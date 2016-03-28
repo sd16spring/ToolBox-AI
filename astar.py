@@ -25,7 +25,7 @@ class GridWorld():
         for i in range(self.height):
             for j in range(self.width):
                 self.cells[(i,j)] = Cell(self.screen,(i*self.cell_size, j*self.cell_size),(self.cell_size,self.cell_size))
-    
+
     def _add_coords(self,a,b):
         return tuple(map(sum,zip(a,b)))
 
@@ -125,7 +125,7 @@ class ObstacleTile(Actor):
     def __init__(self, cell_coordinates, world, image_loc, terrain_cost=0, is_unpassable = True):
         super(ObstacleTile, self).__init__(cell_coordinates, world, image_loc, unremovable = False, is_obstacle = is_unpassable)
         self.terrain_cost = terrain_cost
-        
+
 class Cell():
     def __init__(self, draw_screen, coordinates, dimensions):
         self.draw_screen = draw_screen
@@ -143,9 +143,9 @@ class Cell():
 
     def draw(self):
         COST_TO_DRAW = ''
-        #COST_TO_DRAW = self.g_cost
-        #COST_TO_DRAW = self.h_cost
-        #COST_TO_DRAW = self.f_cost
+        COST_TO_DRAW = self.g_cost
+        # COST_TO_DRAW = self.h_cost
+        # COST_TO_DRAW = self.f_cost
         line_width = 2
         rect = pygame.Rect((self.coordinates[0],self.coordinates[1]),(self.dimensions[0],self.dimensions[1]))
         pygame.draw.rect(self.draw_screen, self.color, rect, line_width)
@@ -167,8 +167,8 @@ class Paul(Actor):
     def get_open_adj_coords(self, coords):
         """returns list of valid coords that are adjacent to the argument, open, and not in the closed list."""
         #modify directions and costs as needed
-        directions = [(1,0),(0,1),(-1,0),(0,-1)]
-        costs = [1,1,1,1]
+        directions = [(1,0),(0,1),(-1,0),(0,-1),(1,1),(1,-1),(-1,1),(-1,-1),(2,0),(0,2),(-2,0),(0,-2)]
+        costs = [1,1,1,1,3,3,3,3,8,8,8,8]
         adj_coords = map(lambda d: self.world._add_coords(coords,d), directions)
         for i, coord in enumerate(adj_coords):
             costs[i] += self.world.get_terrain_cost(coord)
@@ -226,7 +226,7 @@ class Paul(Actor):
             walkable_open_coords, costs = self.get_open_adj_coords(coord_s)
             for idx,coord in enumerate(walkable_open_coords):
                 cell = self.cells[coord]
-                g_cost = cell_s.g_cost + costs[idx] 
+                g_cost = cell_s.g_cost + costs[idx]
                 h_cost = self.get_h_cost(coord, destination_coord)
                 f_cost = g_cost + h_cost
                 if coord in self.open_list:
