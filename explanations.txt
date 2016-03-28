@@ -1,0 +1,3 @@
+diagonal: While the diagonal move costs 3, the path around to avoid using the diagonal move is much longer.
+
+jump,swamp: Actually all the situations I built have the same explanation. There's another way in each case, but it costs much more. In the swamp case, the actor moves out of the swamp immediately, when it stops being necessary.
