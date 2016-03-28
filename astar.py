@@ -30,7 +30,7 @@ class GridWorld():
         return tuple(map(sum,zip(a,b)))
 
     def _init_paul_and_cake(self):
-        self.paul = Paul( (0,0), self, './images/paul.png' )
+        self.paul = Paul( (0,0), self, './images/paul.jpg' )
         self.cake = Actor( (9,9), self, './images/cake.jpg' , unremovable = True, is_obstacle = False)
         self.actors[(0,0)] = self.paul
         self.actors[(9,9)] = self.cake
